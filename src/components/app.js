@@ -12,7 +12,7 @@ function App() {
   }
 
   return (
-    <>
+    <div>
       <h1>Article App</h1>
       Username:{' '}
       <input
@@ -26,7 +26,7 @@ function App() {
       <Counter />
       <Filters articles={[]} />
       <ArticleList />
-    </>
+    </div>
   )
 }
 

@@ -8,7 +8,6 @@ export class ArticleList extends Component {
   static propTypes = {
     articles: PropTypes.array.isRequired,
     fetchAll: PropTypes.func,
-    //from decorator
     openItemId: PropTypes.string,
     toggleOpenItem: PropTypes.func
   }
@@ -26,11 +25,36 @@ export class ArticleList extends Component {
     this.setState({ error })
   }
 
+  filterArticles = () => {
+    const {
+      articles,
+      filters: {
+        titles,
+        dateRange: { from, to }
+      }
+    } = this.props
+    const selectedArticleValues = titles.map((title) => title.value)
+
+    let filteredArticle =
+      titles && titles.length > 0
+        ? articles.filter((article) => selectedArticleValues.includes(article.id))
+        : articles
+    filteredArticle =
+      from && to
+        ? filteredArticle.filter(
+            (article) =>
+              new Date(article.date) >= new Date(from) && new Date(article.date) <= new Date(to)
+          )
+        : filteredArticle
+    return filteredArticle
+  }
+
   render() {
     if (this.state.error) return <h2>OOooops</h2>
 
-    const { articles, toggleOpenItem, openItemId } = this.props
-    const articleItems = articles.map((article) => (
+    const { toggleOpenItem, openItemId } = this.props
+    let filteredArticle = this.filterArticles()
+    const articleItems = filteredArticle.map((article) => (
       <li key={article.id} className="test--article-list__item">
         <Article
           article={article}
@@ -45,5 +69,6 @@ export class ArticleList extends Component {
 }
 
 export default connect((state) => ({
-  articles: state.articles
+  articles: state.articles,
+  filters: state.filters
 }))(accordion(ArticleList))
